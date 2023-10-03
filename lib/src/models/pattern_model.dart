@@ -14,8 +14,19 @@ class PatternModel {
 
   PatternModel.fromJson(Map<String, dynamic> parsedJson) {
     _id = parsedJson['id'];
+    _pattern = List<int>.from(parsedJson['pattern']);
+    _intensities = List<int>.from(parsedJson['intensities']);
     _amplitude = parsedJson['amplitude'];
     _loop = parsedJson['loop'];
+
+    List<PatternNameModal> name = [];
+    var nameMapper = Map<String, String>.from(parsedJson['name']);
+    nameMapper.forEach((key, value) {
+      name.add(PatternNameModal.fromJson(<String, String>{
+        'key': key,
+        'value': value,
+      }));
+    });
   }
 
   String get id => _id;

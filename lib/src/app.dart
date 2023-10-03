@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vibration_app_2/src/ui/test.dart';
 
 class App extends StatelessWidget {
+  App({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

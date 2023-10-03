@@ -15,7 +15,7 @@ class VibrationPatternProvider {
     var db = FirebaseFirestore.instance;
 
     List<PatternModel> result = [];
-    await db.collection('vibration_pattern').get().then((event) {
+    await db.collection('/vibration_pattern').get().then((event) {
       for (var doc in event.docs) {
         var data = doc.data();
         data.addAll({'id': doc.id});
