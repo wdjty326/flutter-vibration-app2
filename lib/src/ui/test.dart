@@ -24,7 +24,7 @@ class Test extends StatelessWidget {
             );
           }
 
-          return Text('loading');
+          return const Text('loading');
         });
   }
 }
