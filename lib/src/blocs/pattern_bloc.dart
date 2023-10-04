@@ -5,17 +5,19 @@ import 'package:flutter_vibration_app_2/src/resources/repository.dart';
 
 class PatternBloc {
   final _repository = Repository();
-  final _patternFetcher = StreamController<List<PatternModel>>.broadcast();
 
-  Stream<List<PatternModel>> get allPatterns => _patternFetcher.stream;
+  /// 패턴 리스트
+  final _patternList = StreamController<List<PatternModel>>.broadcast();
+
+  Stream<List<PatternModel>> get allPatterns => _patternList.stream;
 
   fetchAllPatterns() async {
     List<PatternModel> result = await _repository.fetchAllPatterns();
-    _patternFetcher.sink.add(result);
+    _patternList.sink.add(result);
   }
 
   dispose() {
-    _patternFetcher.close();
+    _patternList.close();
   }
 }
 
