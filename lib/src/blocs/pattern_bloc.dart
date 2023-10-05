@@ -21,4 +21,4 @@ class PatternBloc {
   }
 }
 
-final bloc = PatternBloc();
+final patternBloc = PatternBloc();
