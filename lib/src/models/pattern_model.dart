@@ -1,57 +1,40 @@
 /// firebase 에서 불러올 패턴 모델
 class PatternModel {
+  /// 패턴의 고유 id입니다.
   late String _id;
 
-  late List<PatternNameModal> _name;
+  /// 패턴명입니다.
+  late String _name;
 
   late List<int> _pattern;
 
-  late List<int> _intensities;
+  /// 패턴의 진동 강도 리스트입니다.
+  late List<int>? _intensities;
 
-  late int _amplitude;
+  /// 패턴의 진동 강도입니다.
+  late int? _amplitude;
 
+  /// 반복여부입니다.
   late bool _loop;
 
   PatternModel.fromJson(Map<String, dynamic> parsedJson) {
     _id = parsedJson['id'];
+    _name = parsedJson['name'];
     _pattern = List<int>.from(parsedJson['pattern']);
-    _intensities = List<int>.from(parsedJson['intensities']);
-    _amplitude = parsedJson['amplitude'];
+    _intensities = List<int>.from(parsedJson['intensities'] ?? <dynamic>[]);
+    _amplitude = parsedJson['amplitude'] ?? 255;
     _loop = parsedJson['loop'];
-
-    List<PatternNameModal> name = [];
-    var nameMapper = Map<String, String>.from(parsedJson['name']);
-    nameMapper.forEach((key, value) {
-      name.add(PatternNameModal.fromJson(<String, String>{
-        'key': key,
-        'value': value,
-      }));
-    });
   }
 
   String get id => _id;
 
-  List<PatternNameModal> get name => _name;
+  String get name => _name;
 
   List<int> get pattern => _pattern;
 
-  List<int> get intensities => _intensities;
+  List<int>? get intensities => _intensities;
 
-  int get amplitude => _amplitude;
+  int? get amplitude => _amplitude;
 
   bool get loop => _loop;
-}
-
-class PatternNameModal {
-  late String _key;
-  late String _value;
-
-  PatternNameModal.fromJson(Map<String, dynamic> parsedJson) {
-    _key = parsedJson['key'];
-    _value = parsedJson['value'];
-  }
-
-  String get key => _key;
-
-  String get value => _value;
 }
