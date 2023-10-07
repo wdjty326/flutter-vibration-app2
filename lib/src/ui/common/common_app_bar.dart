@@ -11,6 +11,8 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title),
+      backgroundColor: const Color(0xFFFC94AF), // rose
+      elevation: 1,
     );
   }
 

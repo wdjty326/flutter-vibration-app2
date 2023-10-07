@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_vibration_app_2/src/company_colors.dart';
 import 'package:flutter_vibration_app_2/src/ui/common/common_app_bar.dart';
 import 'package:flutter_vibration_app_2/src/ui/main_ui.dart';
 
@@ -8,10 +9,13 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
+      theme: ThemeData(
+        primaryColor: CompanyColors.pink,
+      ),
       home: Scaffold(
         appBar: CommonAppBar(appBar: AppBar(), title: '우리의 은밀한 울림'),
-        body: MainUI(),
+        body: const MainUI(),
+        backgroundColor: CompanyColors.pink,
       ),
     );
   }
