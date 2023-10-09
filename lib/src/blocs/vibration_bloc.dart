@@ -24,21 +24,21 @@ class VibrationBloc {
   Stream<double> get intensity => _intensity.stream;
 
   changePattern(PatternModel? pattern) async {
-    // StreamSubscription subscription = _selectPattern.stream.listen((_) async {
-    //   await _restartVibration();
-    // });
-    // subscription.onDone(() {
-    //   subscription.cancel();
-    // });
+    StreamSubscription subscription =
+        _selectPattern.stream.listen(null, cancelOnError: true);
+    subscription.onData((data) async {
+      await _restartVibration();
+      subscription.cancel();
+    });
 
     _selectPattern.sink.add(pattern);
   }
 
   changeIntensity(double value) async {
-    StreamSubscription subscription = _intensity.stream.listen((event) async {
-      if (value == event) await _restartVibration();
-    });
-    subscription.onDone(() {
+    StreamSubscription subscription =
+        _intensity.stream.listen(null, cancelOnError: true);
+    subscription.onData((data) async {
+      await _restartVibration();
       subscription.cancel();
     });
 
@@ -58,21 +58,17 @@ class VibrationBloc {
       var selectPattern = _selectPattern.stream.valueOrNull;
       if (selectPattern == null) return;
 
-      /// TODO::amplitude이 지원되는 기기도 진폭제어가 안됨
       /// amplitude 옵션을 지원하지 않을시 처리
       var hasAmplitudeControl = await Vibration.hasAmplitudeControl();
       hasAmplitudeControl = hasAmplitudeControl != null && hasAmplitudeControl;
 
-      var amplitude = max((_intensity.stream.value).toInt() * 200, 1);
+      var amplitude = max((_intensity.stream.value).toInt() * 51, 1);
       var intensities = selectPattern.intensities ?? [1, amplitude];
-
-      debugPrint(
-          '@hasAmplitudeControl: $hasAmplitudeControl, @amplitude: $amplitude');
 
       await Vibration.vibrate(
         pattern: selectPattern.pattern,
         repeat: selectPattern.loop ? 1 : 0,
-        // amplitude: amplitude,
+        amplitude: amplitude,
         intensities: intensities,
       );
       _isVibrate.sink.add(true);

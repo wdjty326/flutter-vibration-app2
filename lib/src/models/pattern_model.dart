@@ -9,10 +9,10 @@ class PatternModel {
   late List<int> _pattern;
 
   /// 패턴의 진동 강도 리스트입니다.
-  late List<int>? _intensities;
+  List<int>? _intensities;
 
   /// 패턴의 진동 강도입니다.
-  late int? _amplitude;
+  int? _amplitude;
 
   /// 반복여부입니다.
   late bool _loop;
@@ -21,8 +21,9 @@ class PatternModel {
     _id = parsedJson['id'];
     _name = parsedJson['name'];
     _pattern = List<int>.from(parsedJson['pattern']);
-    if (parsedJson['intensities'] != null)
+    if (parsedJson['intensities'] != null) {
       _intensities = List<int>.from(parsedJson['intensities']);
+    }
     if (parsedJson['amplitude'] != null) _amplitude = parsedJson['amplitude'];
     _loop = parsedJson['loop'];
   }
