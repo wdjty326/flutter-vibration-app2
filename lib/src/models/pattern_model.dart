@@ -21,8 +21,9 @@ class PatternModel {
     _id = parsedJson['id'];
     _name = parsedJson['name'];
     _pattern = List<int>.from(parsedJson['pattern']);
-    _intensities = List<int>.from(parsedJson['intensities'] ?? <dynamic>[]);
-    _amplitude = parsedJson['amplitude'] ?? 255;
+    if (parsedJson['intensities'] != null)
+      _intensities = List<int>.from(parsedJson['intensities']);
+    if (parsedJson['amplitude'] != null) _amplitude = parsedJson['amplitude'];
     _loop = parsedJson['loop'];
   }
 

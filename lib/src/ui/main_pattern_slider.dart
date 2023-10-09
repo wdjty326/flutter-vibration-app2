@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vibration_app_2/src/blocs/vibration_bloc.dart';
+import 'package:flutter_vibration_app_2/src/company_colors.dart';
 
 class MainPatternSlider extends StatelessWidget {
   const MainPatternSlider({super.key});
@@ -15,7 +16,7 @@ class MainPatternSlider extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                 width: 40, // 박스의 가로 크기
                 height: 40, // 박스의 세로 크기
                 decoration: BoxDecoration(
@@ -37,7 +38,7 @@ class MainPatternSlider extends StatelessWidget {
                 quarterTurns: 0,
                 child: SliderTheme(
                   data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: Colors.red, // 활성 트랙의 색상 변경
+                    activeTrackColor: CompanyColors.pastelPink, // 활성 트랙의 색상 변경
                     inactiveTrackColor: Colors.grey, // 비활성 트랙의 색상 변경
                     thumbColor: Colors.white, // 슬라이더 썸의 색상 변경
                     trackHeight: 72.0,
