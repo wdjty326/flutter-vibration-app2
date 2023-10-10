@@ -24,25 +24,93 @@ class VibrationBloc {
   Stream<double> get intensity => _intensity.stream;
 
   changePattern(PatternModel? pattern) async {
-    // StreamSubscription subscription = _selectPattern.stream.listen((_) async {
-    //   await _restartVibration();
-    // });
-    // subscription.onDone(() {
-    //   subscription.cancel();
-    // });
+    StreamSubscription subscription = _selectPattern.stream.listen(null);
+    subscription.onData((data) async {
+      if (data == _selectPattern.stream.value) await _restartVibration();
+      subscription.cancel();
+    });
 
     _selectPattern.sink.add(pattern);
   }
 
   changeIntensity(double value) async {
-    StreamSubscription subscription = _intensity.stream.listen((event) async {
-      if (value == event) await _restartVibration();
-    });
-    subscription.onDone(() {
+    StreamSubscription subscription = _intensity.stream.listen(null);
+    subscription.onData((data) async {
+      if (_intensity.stream.value == data) await _restartVibration();
       subscription.cancel();
     });
 
     _intensity.sink.add(value);
+  }
+
+  Future<void> _startVibrationDuration(PatternModel selectPattern) async {
+    var duration = selectPattern.duration ?? 500;
+
+    /// hasAmplitudeControl 지원 여부에 따라서 처리 방식 변경
+    var hasAmplitudeControl = await Vibration.hasAmplitudeControl();
+    hasAmplitudeControl = hasAmplitudeControl != null && hasAmplitudeControl;
+    var amplitude = hasAmplitudeControl
+        ? max((_intensity.stream.value).toInt() * 51, 1)
+        : -1;
+
+    /// 커스텀 여부
+    var hasCustomVibrationsSupport =
+        await Vibration.hasCustomVibrationsSupport();
+    hasCustomVibrationsSupport =
+        hasCustomVibrationsSupport != null && hasCustomVibrationsSupport;
+
+    if (hasCustomVibrationsSupport) {
+      await Vibration.vibrate(
+        duration: duration,
+        amplitude: amplitude,
+      );
+      return;
+    }
+
+    do {
+      if (!_isVibrate.stream.value) break;
+
+      Vibration.vibrate(amplitude: amplitude);
+      await Future.delayed(Duration(milliseconds: duration));
+      Vibration.cancel();
+    } while (selectPattern.loop);
+  }
+
+  Future<void> _startVibrationPattern(PatternModel selectPattern) async {
+    var pattern = selectPattern.pattern ?? [];
+    var intensities = selectPattern.intensities ??
+        [1, max((_intensity.stream.value).toInt() * 51, 1)];
+
+    /// 커스텀 여부
+    var hasCustomVibrationsSupport =
+        await Vibration.hasCustomVibrationsSupport();
+    hasCustomVibrationsSupport =
+        hasCustomVibrationsSupport != null && hasCustomVibrationsSupport;
+
+    if (hasCustomVibrationsSupport) {
+      await Vibration.vibrate(
+        pattern: pattern,
+        intensities: intensities,
+        repeat: selectPattern.loop ? 1 : 0,
+      );
+      return;
+    }
+    do {
+      if (!_isVibrate.stream.value) break;
+
+      int count = 0;
+      for (var milliseconds in pattern) {
+        count++;
+        if (count % 2 == 0) {
+          await Future.delayed(Duration(milliseconds: milliseconds));
+          break;
+        }
+
+        Vibration.vibrate(intensities: intensities.sublist(count, count + 2));
+        await Future.delayed(Duration(milliseconds: milliseconds));
+        Vibration.cancel();
+      }
+    } while (selectPattern.loop);
   }
 
   /// 진동시작
@@ -58,23 +126,12 @@ class VibrationBloc {
       var selectPattern = _selectPattern.stream.valueOrNull;
       if (selectPattern == null) return;
 
-      /// TODO::amplitude이 지원되는 기기도 진폭제어가 안됨
-      /// amplitude 옵션을 지원하지 않을시 처리
-      var hasAmplitudeControl = await Vibration.hasAmplitudeControl();
-      hasAmplitudeControl = hasAmplitudeControl != null && hasAmplitudeControl;
+      if (selectPattern.pattern != null) {
+        await _startVibrationPattern(selectPattern);
+      } else {
+        await _startVibrationDuration(selectPattern);
+      }
 
-      var amplitude = max((_intensity.stream.value).toInt() * 200, 1);
-      var intensities = selectPattern.intensities ?? [1, amplitude];
-
-      debugPrint(
-          '@hasAmplitudeControl: $hasAmplitudeControl, @amplitude: $amplitude');
-
-      await Vibration.vibrate(
-        pattern: selectPattern.pattern,
-        repeat: selectPattern.loop ? 1 : 0,
-        // amplitude: amplitude,
-        intensities: intensities,
-      );
       _isVibrate.sink.add(true);
     } catch (e) {
       _isVibrate.sink.addError(e);
